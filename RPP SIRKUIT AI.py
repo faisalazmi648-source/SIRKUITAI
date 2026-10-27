@@ -4,10 +4,15 @@ from docx import Document
 from docx.shared import Pt, Inches, RGBColor
 import streamlit as st
 
-# Mengambil API key dari Streamlit Secrets (Aman dari GitHub)
-# Atau Anda bisa isi langsung string key OpenAI Anda di sini untuk uji coba
-client = OpenAI(api_key=st.secrets["key_GGD3SnD6gjimLqa5"])
+# ==========================================
+# KONFIGURASI API KEY OPENAI (CHATGPT)
+# ==========================================
+# Kunci API Anda sudah dipasang langsung di sini:
+client = OpenAI(api_key="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")
 
+# ==========================================
+# FUNGSI PERAKIT PROMPT AUTOMATIS
+# ==========================================
 def buat_prompt_rpp(data_input):
     prompt_template = f"""
 Anda adalah seorang guru profesional yang handal dalam membuat rencana pelaksanaan pembelajaran. buatkan saya rencana pelaksanaan pembelajaran yang lengkap sesuai dengan standar penyusunan RPP. RPP langsung dibuat dalam bentuk documen atau format word. RPP untuk Untuk kelas {data_input.get('kelas')} dengan mata pelajaran {data_input.get('mata_pelajaran')} dengan fokus materi {data_input.get('fokus_materi')}. identitas rpp meliputi: nama penulis :{data_input.get('nama_penulis')}; NIP. {data_input.get('nip')}; Nama instansi: {data_input.get('nama_instansi')}; tanggal pembuatan: {data_input.get('tanggal_pembuatan')}; dan semester: {data_input.get('semester')}. RPP yang dibuat diberi aktifitas guru dan siswanya, alat dan bahan yang perlu disiapkan, CP, ATP, Profil pelajar pancasila, dan disesuaikan dengan model pembelajaran di bawah ini: 
@@ -26,6 +31,9 @@ Buatkan RPP tersebut secara lengkap, sistematis, rapi, dan langsung mencakup sel
 """
     return prompt_template
 
+# ==========================================
+# FUNGSI PEMBUAT FILE DOCX
+# ==========================================
 def buat_file_docx(teks_rpp, nama_file_output):
     doc = Document()
     sections = doc.sections
@@ -55,13 +63,19 @@ def buat_file_docx(teks_rpp, nama_file_output):
 
     doc.save(nama_file_output)
 
+# ==========================================
+# TAMPILAN ANTARMUKA APLIKASI (STREAMLIT)
+# ==========================================
 st.set_page_config(page_title="Generator RPP SIRKUIT AI", page_icon="📚", layout="centered")
+
 st.title("📚 Generator RPP Otomatis (ChatGPT / OpenAI)")
 st.markdown("Aplikasi penyusun RPP berbasis model ChatGPT.")
 st.divider()
 
+# Form Input Data di Web
 with st.form("form_rpp"):
     st.subheader("✍️ Masukkan Identitas & Materi Pembelajaran")
+    
     col1, col2 = st.columns(2)
     with col1:
         nama_penulis = st.text_input("Nama Penulis & Gelar", "Faisal Azmi Bakhtiar, M.Pd.")
@@ -74,19 +88,28 @@ with st.form("form_rpp"):
 
     mata_pelajaran = st.text_input("Mata Pelajaran", "IPAS (Ilmu Pengetahuan Alam dan Sosial)")
     fokus_materi = st.text_input("Fokus Materi / Topik", "Ekosistem dan Keseimbangan Lingkungan Sekolah")
+
+    # Tombol Eksekusi
     submit_button = st.form_submit_button(label="🚀 Buat & Generate RPP dengan ChatGPT")
 
+# Proses ketika tombol diklik
 if submit_button:
     data_rpp = {
-        "nama_penulis": nama_penulis, "nip": nip, "nama_instansi": nama_instansi,
-        "tanggal_pembuatan": tanggal_pembuatan, "semester": semester, "kelas": kelas,
-        "mata_pelajaran": mata_pelajaran, "fokus_materi": fokus_materi
+        "nama_penulis": nama_penulis,
+        "nip": nip,
+        "nama_instansi": nama_instansi,
+        "tanggal_pembuatan": tanggal_pembuatan,
+        "semester": semester,
+        "kelas": kelas,
+        "mata_pelajaran": mata_pelajaran,
+        "fokus_materi": fokus_materi
     }
 
-    with st.spinner("⏳ Sedang memproses ke ChatGPT..."):
+    with st.spinner("⏳ Sedang memproses ke ChatGPT... Mohon tunggu sebentar."):
+        # 1. Buat Prompt
         prompt_final = buat_prompt_rpp(data_rpp)
 
-        # Memanggil OpenAI API (gpt-4o-mini)
+        # 2. Panggil OpenAI API (menggunakan gpt-4o-mini yang cepat dan efisien)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -95,15 +118,24 @@ if submit_button:
             ],
             temperature=0.4
         )
+        
         teks_hasil = response.choices[0].message.content
 
+        # 3. Simpan ke File Word (.docx)
         nama_file = f"RPP_{mata_pelajaran.replace(' ', '_')}_Kelas_{kelas}.docx"
         buat_file_docx(teks_hasil, nama_file)
 
     st.success("🎉 RPP Berhasil Dibuat!")
+    
+    # Tombol Unduh File (.docx) di Browser
     with open(nama_file, "rb") as file_dokumen:
         st.download_button(
             label="📥 Unduh Dokumen RPP (Format Word)",
-            data=file_dokumen, file_name=nama_file,
+            data=file_dokumen,
+            file_name=nama_file,
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
+
+    # Pratinjau Teks di Layar
+    with st.expander("👁️ Lihat Pratinjau Hasil RPP di Layar"):
+        st.markdown(teks_hasil)
