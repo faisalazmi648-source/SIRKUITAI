@@ -117,7 +117,7 @@ if submit_button:
         
         # Menggunakan model gemini-1.5-flash dengan system instruction terintegrasi
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-2.5-flash",
             system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar.",
             generation_config=generation_config
         )
