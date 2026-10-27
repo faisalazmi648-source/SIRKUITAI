@@ -16,7 +16,7 @@ genai.configure(api_key=API_KEY)
 # ==========================================
 def buat_prompt_rpp(data_input):
     prompt_template = f"""
-Anda adalah seorang guru profesional yang handal dalam membuat rencana pelaksanaan pembelajaran. buatkan saya rencana pelaksanaan pembelajaran yang lengkap sesuai dengan standar penyusunan RPP. RPP langsung dibuat dalam bentuk documen atau format word. RPP untuk Untuk kelas {data_input.get('kelas')} dengan mata pelajaran {data_input.get('mata_pelajaran')} dengan fokus materi {data_input.get('fokus_materi')}. identitas rpp meliputi: nama penulis :{data_input.get('nama_penulis')}; NIP. {data_input.get('nip')}; Nama instansi: {data_input.get('nama_instansi')}; tanggal pembuatan: {data_input.get('tanggal_pembuatan')}; dan semester: {data_input.get('semester')}. RPP yang dibuat diberi aktifitas guru dan siswanya, alat dan bahan yang perlu disiapkan, CP, ATP, Profil pelajar pancasila, dan disesuaikan dengan model pembelajaran di bawah ini: 
+Anda adalah seorang guru profesional yang handal dalam membuat rencana kegiatan pembelajaran. buatkan saya kegiatan pembelajaran dalam bentuk documen atau format word. Kegiatan pembelajaran untuk Untuk kelas {data_input.get('kelas')} dengan mata pelajaran {data_input.get('mata_pelajaran')} dengan fokus materi {data_input.get('fokus_materi')}. identitas kegiatan pembelajaran meliputi: nama penulis :{data_input.get('nama_penulis')}; NIP. {data_input.get('nip')}; Nama instansi: {data_input.get('nama_instansi')}; tanggal pembuatan: {data_input.get('tanggal_pembuatan')}; dan semester: {data_input.get('semester')}. kegiatan pembelajaran meliputi  aktifitas guru dan siswanya, alokasi waktu tiap kegiatan, alat dan bahan yang perlu disiapkan, CP, ATP, Profil pelajar pancasila. Kegiatan pembelajaran disesuaikan dengan model pembelajaran di bawah ini: 
 
 Pengembangan model SIRKUIT AI dilandaskan pada kerangka Inkuiri Kolaboratif (Collaborative Inquiry) melalui siklus Assess-Design-Implement-Measure/Reflect/Change. Model ini terdiri dari 7 tahapan yang membentuk akronim S-I-R-K-U-I-T. Berikut adalah penjelasan detail beserta contoh penerapannya yang bisa diadaptasi untuk semua mata pelajaran.
 
@@ -28,7 +28,7 @@ Pengembangan model SIRKUIT AI dilandaskan pada kerangka Inkuiri Kolaboratif (Col
 6. I - Implementasi (Uji Produk) Penjelasan: Kelompok mempresentasikan karya dan diuji oleh kelompok lain sebagai "Tim Penguji" validitas data.
 7. T - Tindak Lanjut (Refleksi dan Perbaikan) Penjelasan: Siswa merefleksikan proses belajar dan menyimpulkan bahwa kebenaran mutlak diukur dari realitas lapangan.
 
-Buatkan RPP tersebut secara lengkap, sistematis, rapi, dan langsung mencakup seluruh 7 tahapan SIRKUIT AI di atas secara rinci untuk mata pelajaran dan materi yang telah ditentukan.
+Buatkan kegiatan pembelajaran secara sederhana, sistematis, rapi, dan langsung mencakup seluruh 7 tahapan SIRKUIT AI di atas secara rinci untuk mata pelajaran dan materi yang telah ditentukan.
 """
     return prompt_template
 
@@ -67,9 +67,9 @@ def buat_file_docx(teks_rpp, nama_file_output):
 # ==========================================
 # TAMPILAN ANTARMUKA APLIKASI (STREAMLIT)
 # ==========================================
-st.set_page_config(page_title="Generator RPP SIRKUIT AI", page_icon="📚", layout="centered")
+st.set_page_config(page_title="Kegiatan Pembelajaran Berbasis SIRKUIT AI", page_icon="📚", layout="centered")
 
-st.title("📚 Generator RPP Otomatis (Model SIRKUIT AI)")
+st.title("📚 Kegiatan Pembelajaran (Model SIRKUIT AI)")
 st.markdown("Aplikasi berbasis AI untuk menyusun Rencana Pelaksanaan Pembelajaran secara instan dan siap diunduh dalam format Word (`.docx`).")
 st.divider()
 
