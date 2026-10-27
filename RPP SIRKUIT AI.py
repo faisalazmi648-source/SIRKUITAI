@@ -115,9 +115,9 @@ if submit_button:
             "temperature": 0.4,
         }
         
-        # Menggunakan model gemini-3.8-flash dengan system instruction terintegrasi
+        # Menggunakan model gemini-2.5-flash dengan system instruction terintegrasi
         model = genai.GenerativeModel(
-            model_name="gemini-3.8-flash",
+            model_name="gemini-2.5-flash",
             system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar.",
             generation_config=generation_config
         )
