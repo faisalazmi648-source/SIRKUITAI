@@ -8,7 +8,7 @@ import streamlit as st
 # KONFIGURASI API KEY OPENAI (CHATGPT)
 # ==========================================
 # Kunci API Anda sudah dipasang langsung di sini:
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 # ==========================================
 # FUNGSI PERAKIT PROMPT AUTOMATIS
