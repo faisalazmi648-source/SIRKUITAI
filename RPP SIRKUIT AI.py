@@ -1,14 +1,15 @@
 import os
-from openai import OpenAI
+import google.generativeai as genai
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
 import streamlit as st
 
 # ==========================================
-# KONFIGURASI API KEY OPENAI (CHATGPT)
+# KONFIGURASI API KEY GOOGLE GEMINI
 # ==========================================
-# Kunci API Anda sudah dipasang langsung di sini:
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# Mengambil API key secara aman dari Streamlit Secrets
+API_KEY = st.secrets["GEMINI_API_KEY"]
+genai.configure(api_key=API_KEY)
 
 # ==========================================
 # FUNGSI PERAKIT PROMPT AUTOMATIS
@@ -68,8 +69,8 @@ def buat_file_docx(teks_rpp, nama_file_output):
 # ==========================================
 st.set_page_config(page_title="Generator RPP SIRKUIT AI", page_icon="📚", layout="centered")
 
-st.title("📚 Generator RPP Otomatis (ChatGPT / OpenAI)")
-st.markdown("Aplikasi penyusun RPP berbasis model ChatGPT.")
+st.title("📚 Generator RPP Otomatis (Model SIRKUIT AI)")
+st.markdown("Aplikasi berbasis AI untuk menyusun Rencana Pelaksanaan Pembelajaran secara instan dan siap diunduh dalam format Word (`.docx`).")
 st.divider()
 
 # Form Input Data di Web
@@ -90,7 +91,7 @@ with st.form("form_rpp"):
     fokus_materi = st.text_input("Fokus Materi / Topik", "Ekosistem dan Keseimbangan Lingkungan Sekolah")
 
     # Tombol Eksekusi
-    submit_button = st.form_submit_button(label="🚀 Buat & Generate RPP dengan ChatGPT")
+    submit_button = st.form_submit_button(label="🚀 Buat & Generate RPP Sekarang")
 
 # Proses ketika tombol diklik
 if submit_button:
@@ -105,21 +106,24 @@ if submit_button:
         "fokus_materi": fokus_materi
     }
 
-    with st.spinner("⏳ Sedang memproses ke ChatGPT... Mohon tunggu sebentar."):
+    with st.spinner("⏳ Sedang merakit prompt otomatis dan memproses ke mesin AI... Mohon tunggu sebentar."):
         # 1. Buat Prompt
         prompt_final = buat_prompt_rpp(data_rpp)
 
-        # 2. Panggil OpenAI API (menggunakan gpt-4o-mini yang cepat dan efisien)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar."},
-                {"role": "user", "content": prompt_final}
-            ],
-            temperature=0.4
+        # 2. Panggil Gemini API menggunakan google-generativeai stabil
+        generation_config = {
+            "temperature": 0.4,
+        }
+        
+        # Menggunakan model gemini-1.5-flash dengan system instruction terintegrasi
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar.",
+            generation_config=generation_config
         )
         
-        teks_hasil = response.choices[0].message.content
+        respon = model.generate_content(prompt_final)
+        teks_hasil = respon.text
 
         # 3. Simpan ke File Word (.docx)
         nama_file = f"RPP_{mata_pelajaran.replace(' ', '_')}_Kelas_{kelas}.docx"
