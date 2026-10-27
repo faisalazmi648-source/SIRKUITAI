@@ -1,18 +1,13 @@
 import os
-import google.generativeai as genai
+from openai import OpenAI
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
 import streamlit as st
 
-# ==========================================
-# KONFIGURASI API KEY GOOGLE GEMINI
-# ==========================================
-API_KEY = "AQ.Ab8RN6JZQAAWTwStDZuhfg38SF713csgquvOQxDiVJBSeXy3KA"
-genai.configure(api_key=API_KEY)
+# Mengambil API key dari Streamlit Secrets (Aman dari GitHub)
+# Atau Anda bisa isi langsung string key OpenAI Anda di sini untuk uji coba
+client = OpenAI(api_key=st.secrets["key_GGD3SnD6gjimLqa5"])
 
-# ==========================================
-# FUNGSI PERAKIT PROMPT AUTOMATIS
-# ==========================================
 def buat_prompt_rpp(data_input):
     prompt_template = f"""
 Anda adalah seorang guru profesional yang handal dalam membuat rencana pelaksanaan pembelajaran. buatkan saya rencana pelaksanaan pembelajaran yang lengkap sesuai dengan standar penyusunan RPP. RPP langsung dibuat dalam bentuk documen atau format word. RPP untuk Untuk kelas {data_input.get('kelas')} dengan mata pelajaran {data_input.get('mata_pelajaran')} dengan fokus materi {data_input.get('fokus_materi')}. identitas rpp meliputi: nama penulis :{data_input.get('nama_penulis')}; NIP. {data_input.get('nip')}; Nama instansi: {data_input.get('nama_instansi')}; tanggal pembuatan: {data_input.get('tanggal_pembuatan')}; dan semester: {data_input.get('semester')}. RPP yang dibuat diberi aktifitas guru dan siswanya, alat dan bahan yang perlu disiapkan, CP, ATP, Profil pelajar pancasila, dan disesuaikan dengan model pembelajaran di bawah ini: 
@@ -31,9 +26,6 @@ Buatkan RPP tersebut secara lengkap, sistematis, rapi, dan langsung mencakup sel
 """
     return prompt_template
 
-# ==========================================
-# FUNGSI PEMBUAT FILE DOCX
-# ==========================================
 def buat_file_docx(teks_rpp, nama_file_output):
     doc = Document()
     sections = doc.sections
@@ -63,19 +55,13 @@ def buat_file_docx(teks_rpp, nama_file_output):
 
     doc.save(nama_file_output)
 
-# ==========================================
-# TAMPILAN ANTARMUKA APLIKASI (STREAMLIT)
-# ==========================================
 st.set_page_config(page_title="Generator RPP SIRKUIT AI", page_icon="📚", layout="centered")
-
-st.title("📚 Generator RPP Otomatis (Model SIRKUIT AI)")
-st.markdown("Aplikasi berbasis AI untuk menyusun Rencana Pelaksanaan Pembelajaran secara instan dan siap diunduh dalam format Word (`.docx`).")
+st.title("📚 Generator RPP Otomatis (ChatGPT / OpenAI)")
+st.markdown("Aplikasi penyusun RPP berbasis model ChatGPT.")
 st.divider()
 
-# Form Input Data di Web
 with st.form("form_rpp"):
     st.subheader("✍️ Masukkan Identitas & Materi Pembelajaran")
-    
     col1, col2 = st.columns(2)
     with col1:
         nama_penulis = st.text_input("Nama Penulis & Gelar", "Faisal Azmi Bakhtiar, M.Pd.")
@@ -88,57 +74,36 @@ with st.form("form_rpp"):
 
     mata_pelajaran = st.text_input("Mata Pelajaran", "IPAS (Ilmu Pengetahuan Alam dan Sosial)")
     fokus_materi = st.text_input("Fokus Materi / Topik", "Ekosistem dan Keseimbangan Lingkungan Sekolah")
+    submit_button = st.form_submit_button(label="🚀 Buat & Generate RPP dengan ChatGPT")
 
-    # Tombol Eksekusi
-    submit_button = st.form_submit_button(label="🚀 Buat & Generate RPP Sekarang")
-
-# Proses ketika tombol diklik
 if submit_button:
     data_rpp = {
-        "nama_penulis": nama_penulis,
-        "nip": nip,
-        "nama_instansi": nama_instansi,
-        "tanggal_pembuatan": tanggal_pembuatan,
-        "semester": semester,
-        "kelas": kelas,
-        "mata_pelajaran": mata_pelajaran,
-        "fokus_materi": fokus_materi
+        "nama_penulis": nama_penulis, "nip": nip, "nama_instansi": nama_instansi,
+        "tanggal_pembuatan": tanggal_pembuatan, "semester": semester, "kelas": kelas,
+        "mata_pelajaran": mata_pelajaran, "fokus_materi": fokus_materi
     }
 
-    with st.spinner("⏳ Sedang merakit prompt otomatis dan memproses ke mesin AI... Mohon tunggu sebentar."):
-        # 1. Buat Prompt
+    with st.spinner("⏳ Sedang memproses ke ChatGPT..."):
         prompt_final = buat_prompt_rpp(data_rpp)
 
-        # 2. Panggil Gemini API menggunakan google-generativeai stabil
-        generation_config = {
-            "temperature": 0.4,
-        }
-        
-        # Menggunakan model gemini-1.5-flash dengan system instruction terintegrasi
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar.",
-            generation_config=generation_config
+        # Memanggil OpenAI API (gpt-4o-mini)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar."},
+                {"role": "user", "content": prompt_final}
+            ],
+            temperature=0.4
         )
-        
-        respon = model.generate_content(prompt_final)
-        teks_hasil = respon.text
+        teks_hasil = response.choices[0].message.content
 
-        # 3. Simpan ke File Word (.docx)
         nama_file = f"RPP_{mata_pelajaran.replace(' ', '_')}_Kelas_{kelas}.docx"
         buat_file_docx(teks_hasil, nama_file)
 
     st.success("🎉 RPP Berhasil Dibuat!")
-    
-    # Tombol Unduh File (.docx) di Browser
     with open(nama_file, "rb") as file_dokumen:
         st.download_button(
             label="📥 Unduh Dokumen RPP (Format Word)",
-            data=file_dokumen,
-            file_name=nama_file,
+            data=file_dokumen, file_name=nama_file,
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
-
-    # Pratinjau Teks di Layar
-    with st.expander("👁️ Lihat Pratinjau Hasil RPP di Layar"):
-        st.markdown(teks_hasil)
