@@ -115,7 +115,7 @@ if submit_button:
         # 2. Panggil Gemini API
         system_instruction = "Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar."
         respon = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-3.8-flash',
             contents=prompt_final,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
