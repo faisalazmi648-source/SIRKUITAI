@@ -7,7 +7,7 @@ import streamlit as st
 # ==========================================
 # KONFIGURASI API KEY GOOGLE GEMINI
 # ==========================================
-API_KEY = "AQ.Ab8RN6IiOaTBbXkDiuoNtz73zhfWevjanrN9C-dend9tW_RW6A"
+API_KEY = "AQ.Ab8RN6LektiUyJAD3PY7rJEsxaTP4VZQ6bqVlqZiDNd8p0lrZg"
 genai.configure(api_key=API_KEY)
 
 # ==========================================
