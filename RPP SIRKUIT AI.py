@@ -1,17 +1,14 @@
 import os
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 import streamlit as st
 
 # ==========================================
 # KONFIGURASI API KEY GOOGLE GEMINI
 # ==========================================
 API_KEY = "AQ.Ab8RN6IiOaTBbXkDiuoNtz73zhfWevjanrN9C-dend9tW_RW6A"
-os.environ["GEMINI_API_KEY"] = API_KEY
-client = genai.Client()
+genai.configure(api_key=API_KEY)
 
 # ==========================================
 # FUNGSI PERAKIT PROMPT AUTOMATIS
@@ -112,17 +109,19 @@ if submit_button:
         # 1. Buat Prompt
         prompt_final = buat_prompt_rpp(data_rpp)
 
-        # 2. Panggil Gemini API
-        system_instruction = "Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar."
-        respon = client.models.generate_content(
-            model='gemini-3.8-flash',
-            contents=prompt_final,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.4,
-            ),
+        # 2. Panggil Gemini API menggunakan google-generativeai stabil
+        generation_config = {
+            "temperature": 0.4,
+        }
+        
+        # Menggunakan model gemini-1.5-flash dengan system instruction terintegrasi
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar.",
+            generation_config=generation_config
         )
-
+        
+        respon = model.generate_content(prompt_final)
         teks_hasil = respon.text
 
         # 3. Simpan ke File Word (.docx)
