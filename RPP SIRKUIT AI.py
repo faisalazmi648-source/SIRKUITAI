@@ -115,14 +115,18 @@ if submit_button:
             "temperature": 0.4,
         }
         
-        # Menggunakan model gemini-1.5-flash dengan system instruction terintegrasi
+        # Menggunakan model gemini-3.8-flash dengan system instruction terintegrasi
         model = genai.GenerativeModel(
             model_name="gemini-3.8-flash",
             system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat modul ajar.",
             generation_config=generation_config
         )
         
-        respon = model.generate_content(prompt_final)
+        # Menambahkan request_options timeout di sini agar tidak DeadlineExceeded
+        respon = model.generate_content(
+            prompt_final,
+            request_options={'timeout': 120}
+        )
         teks_hasil = respon.text
 
         # 3. Simpan ke File Word (.docx)
