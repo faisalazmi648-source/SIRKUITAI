@@ -19,7 +19,7 @@ def init_gemini_model():
     }
     # Pastikan menggunakan nama model yang valid dan stabil di Google AI Studio
     return genai.GenerativeModel(
-        model_name="gemini-3.8-flash", # Ubah ke gemini-1.5-flash atau model flash terbaru yang stabil
+        model_name="gemini-3.6-flash", # Ubah ke gemini-1.5-flash atau model flash terbaru yang stabil
         system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat kegiatan pembelajaran.",
         generation_config=generation_config
     )
