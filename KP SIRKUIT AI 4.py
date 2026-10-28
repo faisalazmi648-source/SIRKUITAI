@@ -95,7 +95,7 @@ with st.form("form_rpp"):
     col1, col2 = st.columns(2)
     with col1:
         nama_penulis = st.text_input("Nama Penulis & Gelar", "Tulis Disini")
-        nip = st.text_input("NIP", "tulis nip disini, jika tidak ada beri tanda strip (-)")
+        nip = st.text_input("NIP", "Tulis Disini / -")
         nama_instansi = st.text_input("Nama Instansi / Sekolah", "Tulis Disini")
     with col2:
         tanggal_pembuatan = st.text_input("Tanggal Pembuatan", "27 Oktober 2026")
