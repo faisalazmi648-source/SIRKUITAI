@@ -17,7 +17,7 @@ def init_gemini_model():
         "temperature": 0.4,
     }
     return genai.GenerativeModel(
-        model_name="gemini-3.6-flash", # Pastikan menggunakan model flash yang stabil
+        model_name="gemini-3.8-flash", # Pastikan menggunakan model flash yang stabil
         system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat kegiatan pembelajaran.",
         generation_config=generation_config
     )
