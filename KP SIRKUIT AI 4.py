@@ -31,19 +31,29 @@ model = init_gemini_model()
 # ==========================================
 def buat_prompt_rpp(data_input):
     prompt_template = f"""
-Anda adalah seorang guru profesional yang handal dalam membuat rencana kegiatan pembelajaran. buatkan saya kegiatan pembelajaran dalam bentuk documen atau format word. Kegiatan pembelajaran untuk Untuk kelas {data_input.get('kelas')} dengan mata pelajaran {data_input.get('mata_pelajaran')} dengan fokus materi {data_input.get('fokus_materi')}. identitas kegiatan pembelajaran meliputi: nama penulis :{data_input.get('nama_penulis')}; NIP. {data_input.get('nip')}; Nama instansi: {data_input.get('nama_instansi')}; tanggal pembuatan: {data_input.get('tanggal_pembuatan')}; dan semester: {data_input.get('semester')}. kegiatan pembelajaran meliputi  aktifitas guru dan siswanya, alokasi waktu dibuat di setiap aktifitas. Kegiatan pembelajaran disesuaikan dengan model pembelajaran di bawah ini: 
+Buatkan dokumen Rencana Kegiatan Pembelajaran lengkap siap cetak (.docx) untuk Kurikulum Merdeka.
 
-Pengembangan model SIRKUIT AI dilandaskan pada kerangka Inkuiri Kolaboratif (Collaborative Inquiry) melalui siklus Assess-Design-Implement-Measure/Reflect/Change. Model ini terdiri dari 7 tahapan yang membentuk akronim S-I-R-K-U-I-T. Berikut adalah penjelasan detail beserta contoh penerapannya yang bisa diadaptasi untuk semua mata pelajaran.
+**IDENTITAS:**
+- Penulis: {data_input.get('nama_penulis')} (NIP: {data_input.get('nip')})
+- Instansi: {data_input.get('nama_instansi')}
+- Kelas / Semester: {data_input.get('kelas')} / {data_input.get('semester')}
+- Mata Pelajaran: {data_input.get('mata_pelajaran')}
+- Fokus Materi: {data_input.get('fokus_materi')}
+- Tanggal: {data_input.get('tanggal_pembuatan')}
 
-1. S - Selidiki (Orientasi Masalah Nyata), Aktifitas guru: Guru menyajikan masalah yang benar-benar ada di lingkungan sekitar sesuai mata pelajaran dan Fokus Materi / Topik yang telah ditentukan. Aktifitas Siswa yaitu mengamati, membangun rasa ingin tahu, dan merumuskan pertanyaan investigasi berdasarkan mata pelajaran dan Fokus Materi / Topik yang telah ditentukan.
-2. I - Investigasi (Pengumpulan Data), Aktifitas guru: meminta siswa membentuk kelompok untuk melakukan investigasi tentang masalah sesuai mata pelajaran dan Fokus Materi / Topik yang telah ditentukan. Atifitas siswa yaitu: secara berkelompok, siswa mengumpulkan data primer (wawancara, observasi fisik, data numerik lapangan, buku cetak).
-3. R - Rancang Pertanyaan untuk AI (Prompting), Aktifitas guru yaitu memberikan contoh prompt untuk menyelesaikan masalah sesuai mata pelajaran dan Fokus Materi / Topik yang telah ditentukan untuk di copy paste di platform AI. Sedangkan aktifitas siswa yaitu: siswa belajar membuat prompt spesifik untuk AI untuk mencari dugaan awal/teori umum sesuai mata pelajaran dan Fokus Materi / Topik yang telah ditentukan.
-4. K - Kritis dan Verifikasi (AI Verification Loop), Aktifitas guru: meminta agar siswa membandingkan data yang diperoleh lewat AI dan data primer tetantang masalah sesuai mata pelajaran dan Fokus Materi / Topik yang telah ditentukan. aktifitas siswa yaitu: dalam kelompok Siswa membuat Tabel Verifikasi untuk membandingkan klaim AI dengan data primer / hasil Investigasi nyata di lapangan terkait masalah sesuai mata pelajaran dan Fokus Materi / Topik yang telah ditentukan.
-5. U - Ubah Menjadi Solusi, untuk aktifitas guru: meminta siswa untuk membuat produk yang disesuaikan dengan solusi masalah terkait mata pelajaran dan Fokus Materi / Topik yang telah ditentukan, aktifitas siswa membuat produk Berdasarkan data nyata / primer yang diverifikasi dengan teori AI, siswa merancang solusi logis (karya fisik, algoritma/computational thinking, atau maket yang disesuaikan dengan mata pelajaran dan Fokus Materi / Topik yang telah ditentukan).
-6. I - Implementasi (Uji Produk), aktifitas guru yaitu: meminta kelompok untuk melakukan presentasi, menunjuk kelompok lain untuk memberi pertanyaan sebagai "tim penguji", dan meberikan penguatan dan apresiasi kepada kelompok yang telah presentasi, aktiftas siswa yaitu: Kelompok mempresentasikan karya dan diuji oleh kelompok lain sebagai "Tim Penguji" validitas data.
-7. T - Tindak Lanjut (Refleksi dan Perbaikan), aktifitas guru dan siswa yaitu: melakukan refleksi proses belajar dan menyimpulkan bahwa kebenaran mutlak diukur dari realitas lapangan atau data primer.
+**KOMPONEN UTAMA:**
+1. Profil Pelajar Pancasila, CP, ATP, serta Alat & Bahan.
+2. Alokasi waktu tiap tahapan.
+3. Rincian Aktivitas Guru & Siswa menggunakan **Model SIRKUIT AI (7 Langkah)**:
+   - S: Selidiki (Orientasi Masalah Nyata)
+   - I: Investigasi (Pengumpulan Data Primer)
+   - R: Rancang Pertanyaan untuk AI (Prompting)
+   - K: Kritis & Verifikasi (AI Verification Loop)
+   - U: Ubah Menjadi Solusi (Perancangan Produk/Solusi)
+   - I: Implementasi (Uji Produk & Presentasi)
+   - T: Tindak Lanjut (Refleksi & Perbaikan)
 
-Buatkan kegiatan pembelajaran secara sederhana langsung mencakup seluruh 7 tahapan SIRKUIT AI di atas secara rinci untuk mata pelajaran dan fokus materi / topik yang telah ditentukan.
+Susun secara sistematis, terstruktur rapi, langsung pada isi, dan gunakan format teks tebal (**bold**) pada bagian penting.
 """
     return prompt_template
 
