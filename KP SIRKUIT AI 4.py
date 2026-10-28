@@ -138,7 +138,7 @@ if submit_button:
         # 2. Panggil Gemini API menggunakan model yang sudah di-cache di atas
         respon = model.generate_content(
             prompt_final,
-            request_options={'timeout': 180}
+            request_options={'timeout': 300}
         )
         teks_hasil = respon.text
 
