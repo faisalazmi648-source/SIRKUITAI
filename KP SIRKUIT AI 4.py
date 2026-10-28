@@ -94,16 +94,16 @@ with st.form("form_rpp"):
     
     col1, col2 = st.columns(2)
     with col1:
-        nama_penulis = st.text_input("Nama Penulis & Gelar", "Tulis Namamu Disini")
+        nama_penulis = st.text_input("Nama Penulis & Gelar", "Tulis Disini")
         nip = st.text_input("NIP", "tulis nip disini, jika tidak ada beri tanda strip (-)")
-        nama_instansi = st.text_input("Nama Instansi / Sekolah", "Tulis Nama SDmu Disini")
+        nama_instansi = st.text_input("Nama Instansi / Sekolah", "Tulis Disini")
     with col2:
         tanggal_pembuatan = st.text_input("Tanggal Pembuatan", "27 Oktober 2026")
         semester = st.selectbox("Semester", ["Ganjil (1)", "Genap (2)"])
         kelas = st.text_input("Kelas", "V (Lima)")
 
-    mata_pelajaran = st.text_input("Mata Pelajaran", "Tulis Mata Pelajaranmu Disini")
-    fokus_materi = st.text_input("Fokus Materi / Topik", "Tulis Fokus Materi Disini")
+    mata_pelajaran = st.text_input("Mata Pelajaran", "Tulis Disini")
+    fokus_materi = st.text_input("Fokus Materi / Topik", "Tulis Disini")
 
     # Tombol Eksekusi
     submit_button = st.form_submit_button(label="🚀 Buat & Generate Sekarang")
