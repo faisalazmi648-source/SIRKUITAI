@@ -1,7 +1,7 @@
 import os
 import google.generativeai as genai
 from docx import Document
-from docx.shared import Pt, Inches, RGBColor
+from docx.shared import Pt, Inches
 import streamlit as st
 
 # ==========================================
@@ -10,16 +10,14 @@ import streamlit as st
 API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=API_KEY)
 
-# Gunakan @st.cache_resource agar inisialisasi model hanya terjadi sekali, 
-# mencegah pemborosan request/token saat aplikasi berjalan.
+# Gunakan @st.cache_resource agar inisialisasi model hanya terjadi sekali
 @st.cache_resource
 def init_gemini_model():
     generation_config = {
         "temperature": 0.4,
     }
-    # Pastikan menggunakan nama model yang valid dan stabil di Google AI Studio
     return genai.GenerativeModel(
-        model_name="gemini-3.6-flash", # Ubah ke gemini-1.5-flash atau model flash terbaru yang stabil
+        model_name="gemini-3.6-flash", # Pastikan menggunakan model flash yang stabil
         system_instruction="Anda adalah Pakar Kurikulum dan Guru Penggerak Indonesia yang handal membuat kegiatan pembelajaran.",
         generation_config=generation_config
     )
@@ -92,11 +90,15 @@ def buat_file_docx(teks_rpp, nama_file_output):
 # ==========================================
 # TAMPILAN ANTARMUKA APLIKASI (STREAMLIT)
 # ==========================================
-st.set_page_config(page_title="Kegiatan Pembelajaran Berbasis SIRKUIT AI", page_icon="📚", layout="centered")
+st.set_page_config(page_title="Rencana Kegiatan Pembelajaran Berbasis SIRKUIT AI", page_icon="📚", layout="centered")
 
-st.title("📚 Kegiatan Pembelajaran (Model SIRKUIT AI)")
-st.markdown("Aplikasi berbasis AI untuk menyusun Rencana Pelaksanaan Pembelajaran secara instan dan siap diunduh dalam format Word (`.docx`).")
+st.title("📚 RKP SIRKUIT AI)")
+st.markdown("Aplikasi berbasis AI untuk menyusun Rencana Kegiatan Pembelajaran secara instan dan siap diunduh dalam format Word (`.docx`).")
 st.divider()
+
+# Inisialisasi session state untuk mencegah klik ganda
+if "is_generating" not in st.session_state:
+    st.session_state.is_generating = False
 
 # Form Input Data di Web
 with st.form("form_rpp"):
@@ -116,7 +118,7 @@ with st.form("form_rpp"):
     fokus_materi = st.text_input("Fokus Materi / Topik", "Tulis Disini")
 
     # Tombol Eksekusi
-    submit_button = st.form_submit_button(label="🚀 Buat & Generate Sekarang")
+    submit_button = st.form_submit_button(label="🚀 Buat & Generate RKP Sekarang")
 
 # Proses ketika tombol diklik
 if submit_button:
@@ -131,32 +133,41 @@ if submit_button:
         "fokus_materi": fokus_materi
     }
 
-    with st.spinner("⏳ Sedang merakit prompt otomatis dan memproses ke mesin AI... Mohon tunggu sebentar."):
-        # 1. Buat Prompt
-        prompt_final = buat_prompt_rpp(data_rpp)
+    with st.spinner("⏳ Sedang merakit promptnya, kurang lebih 5 menitanlah jadi tunggu sebentar yah..."):
+        try:
+            # 1. Buat Prompt
+            prompt_final = buat_prompt_rpp(data_rpp)
 
-        # 2. Panggil Gemini API menggunakan model yang sudah di-cache di atas
-        respon = model.generate_content(
-            prompt_final,
-            request_options={'timeout': 300}
-        )
-        teks_hasil = respon.text
+            # 2. Panggil Gemini API
+            respon = model.generate_content(
+                prompt_final,
+                request_options={'timeout': 300}
+            )
+            teks_hasil = respon.text
 
-        # 3. Simpan ke File Word (.docx)
-        nama_file = f"RPP_{mata_pelajaran.replace(' ', '_')}_Kelas_{kelas}.docx"
-        buat_file_docx(teks_hasil, nama_file)
+            # 3. Simpan ke File Word (.docx)
+            nama_file = f"RPP_{mata_pelajaran.replace(' ', '_')}_Kelas_{kelas}.docx"
+            buat_file_docx(teks_hasil, nama_file)
 
-    st.success("🎉 RPP Berhasil Dibuat!")
-    
-    # Tombol Unduh File (.docx) di Browser
-    with open(nama_file, "rb") as file_dokumen:
+            st.success("🎉 RPP Berhasil Dibuat!")
+            
+            # Simpan hasil ke session_state agar tidak hilang saat interaksi unduh
+            st.session_state["teks_hasil"] = teks_hasil
+            st.session_state["nama_file"] = nama_file
+
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat memproses API: {e}")
+            st.info("💡 Tips: Batas Free Tier adalah 5 RPM. Tunggu sekitar 60 detik jika Anda baru saja melakukan beberapa kali klik beruntun sebelum mencoba lagi.")
+
+# Menampilkan tombol download dan pratinjau jika file sudah berhasil dibuat di session
+if "teks_hasil" in st.session_state and "nama_file" in st.session_state:
+    with open(st.session_state["nama_file"], "rb") as file_dokumen:
         st.download_button(
-            label="📥 Unduh Dokumen RPP (Format Word)",
+            label="📥 Unduh Dokumen RKP (Format Word)",
             data=file_dokumen,
-            file_name=nama_file,
+            file_name=st.session_state["nama_file"],
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
 
-    # Pratinjau Teks di Layar
-    with st.expander("👁️ Lihat Pratinjau Hasil RPP di Layar"):
-        st.markdown(teks_hasil)
+    with st.expander("👁️ Lihat Pratinjau Hasil RKP di Layar"):
+        st.markdown(st.session_state["teks_hasil"])
