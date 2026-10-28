@@ -125,7 +125,7 @@ if submit_button:
         # Menambahkan request_options timeout di sini agar tidak DeadlineExceeded
         respon = model.generate_content(
             prompt_final,
-            request_options={'timeout': 600}
+            request_options={'timeout': 180}
         )
         teks_hasil = respon.text
 
